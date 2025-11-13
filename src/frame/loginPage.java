@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class loginPage extends JFrame {
@@ -105,6 +106,20 @@ public class loginPage extends JFrame {
 		LoginButton.setBorderPainted(false);
 		LoginButton.setBounds(0, 0, 97, 34);
 		LoginButtonPanel.add(LoginButton);
+                
+                LoginButton.addActionListener(e -> {
+                    String username = UserField.getText();
+                    String password = PassField.getText();
+                    
+                    if (username.equals("admin") && password.equals("admin123")) {
+                    stokBahan stok = new stokBahan(this); 
+                    stok.setVisible(true);       // tampilkan frameB
+                    stok.setLocationRelativeTo(null); // posisikan di tengah layar
+                    this.dispose();     
+                    }else{
+                        JOptionPane.showMessageDialog(this, "Username atau Password salah");
+                    }
+                });
 		
 		PanelButtonAll GuessButtonPanel = new PanelButtonAll(Color.ORANGE, Color.YELLOW);
 		GuessButtonPanel.setLayout(null);
