@@ -134,9 +134,9 @@ public class loginPage extends JFrame {
 		GuessButtonPanel.add(GuessButton);
                 
                 GuessButton.addActionListener(e -> {
-                    menuPage menu = new menuPage();  // buat objek frameB
-                    menu.setVisible(true);       // tampilkan frameB
-                    menu.setLocationRelativeTo(null); // posisikan di tengah layar
+                    menuPage menu = new menuPage();  
+                    menu.setVisible(true);      
+                    menu.setLocationRelativeTo(null); 
                     this.dispose();     
                 });
 		

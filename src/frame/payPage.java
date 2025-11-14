@@ -9,14 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
-// Import semua untuk SQL
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-// ---------------------------------------------
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -24,8 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
-import javax.swing.JScrollPane; // <-- TAMBAH IMPORT INI
-import javax.swing.JTextArea;   // <-- TAMBAH IMPORT INI
+import javax.swing.JScrollPane; 
+import javax.swing.JTextArea;   
 
 import panel.PanelButtonAll;
 import panel.PanelLoginGradient;
@@ -33,22 +31,20 @@ import panel.PanelLoginGradient;
 public class payPage extends JFrame {
 
     private PanelBulet panelCash, PanelQris;
-    
-    // --- Variabel Data ---
+
     private int totalBayar;
-    private HashMap<String, Integer> pesanan; // (NamaMenu -> Jumlah)
-    private JFrame frameMenuUtama; // Frame menu untuk kita kembali
+    private HashMap<String, Integer> pesanan; 
+    private JFrame frameMenuUtama; 
     
-    // --- TAMBAHAN BARU ---
-    // Untuk menyimpan subtotal (Harga x Jumlah) per item untuk struk
+
     private HashMap<String, Integer> subtotalPerItem; 
     
-    // --- Variabel Database ---
+
     private final String url = "jdbc:mysql://localhost:3306/restaurant2";
     private final String user = "root";
     private final String pass = "";
 
-    // --- Driver ---
+
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -57,11 +53,7 @@ public class payPage extends JFrame {
             System.exit(1);
         }
     }
-    // -----------------------
 
-    /**
-     * Launch the application (untuk tes)
-     */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -82,7 +74,7 @@ public class payPage extends JFrame {
         this.totalBayar = totalHarga;
         this.pesanan = pesanan;
         this.frameMenuUtama = frameMenuUtama;
-        this.subtotalPerItem = new HashMap<>(); // <-- Inisialisasi HashMap baru
+        this.subtotalPerItem = new HashMap<>(); 
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 640, 480);
@@ -91,9 +83,7 @@ public class payPage extends JFrame {
         PanelLoginGradient panelbayar = new PanelLoginGradient();
         this.setContentPane(panelbayar);
         panelbayar.setLayout(null);
-        
-        // ... (Semua kode GUI Anda: Logo, Label, PanelQris, PanelCash, dll.) ...
-        // (Saya singkat agar fokus ke perubahan, tapi kode Anda tetap sama)
+
         JLabel lblNewLabel = new JLabel("");
 		Image img = new ImageIcon(this.getClass().getResource("/img/LogoRestoranKecilRemoveBackGround.png")).getImage();
 		lblNewLabel.setIcon(new ImageIcon(img));
@@ -136,12 +126,6 @@ public class payPage extends JFrame {
 		ButtonCash.setContentAreaFilled(false);
 		panelCash.add(ButtonCash);
 
-
-        // ==========================================================
-        // === LOGIKA TOMBOL ===
-        // ==========================================================
-
-        // 1. Logika Tombol Cash/Tunai
         ButtonCash.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String formattedTotal = String.format("Rp %,d", totalBayar);
@@ -155,7 +139,6 @@ public class payPage extends JFrame {
             }
         });
 
-        // 2. Logika Tombol QRIS
         ButtonQris.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -179,9 +162,6 @@ public class payPage extends JFrame {
         });
     }
     
-    /**
-     * Method untuk menampilkan konfirmasi pembayaran
-     */
     private void tampilkanKonfirmasiPembayaran() {
         int pilihan = JOptionPane.showConfirmDialog(
             this,
@@ -195,17 +175,14 @@ public class payPage extends JFrame {
             boolean sukses = lakukanPenguranganStok();
             
             if (sukses) {
-                // --- PERUBAHAN DI SINI ---
-                // 1. Tampilkan Struk
+
                 tampilkanStruk(); 
                 
-                // 2. Kembali ke menu (setelah user klik OK pada struk)
                 if (frameMenuUtama != null) {
                     frameMenuUtama.dispose(); 
                 }
                 new menuPage().setVisible(true); 
                 this.dispose(); 
-                // --- AKHIR PERUBAHAN ---
                 
             } else {
                 JOptionPane.showMessageDialog(this, 
@@ -216,9 +193,6 @@ public class payPage extends JFrame {
         }
     }
 
-    // ==========================================================
-    // === METHOD BARU UNTUK TAMPILKAN STRUK ===
-    // ==========================================================
     private void tampilkanStruk() {
         StringBuilder struk = new StringBuilder();
         struk.append("        STRUK PEMBAYARAN\n");
@@ -245,27 +219,24 @@ public class payPage extends JFrame {
         struk.append(String.format("%-23s Rp %,d\n\n", "TOTAL BAYAR:", totalBayar));
         struk.append("          Terima Kasih!\n");
 
-        // Gunakan JTextArea agar format 'Monospaced' (rata) berfungsi
+  
         JTextArea textArea = new JTextArea(struk.toString());
         textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         textArea.setEditable(false);
         
-        // Buat JScrollPane agar bisa di-scroll jika struknya panjang
         JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new java.awt.Dimension(300, 400)); // Atur ukuran dialog
+        scrollPane.setPreferredSize(new java.awt.Dimension(300, 400));
         
         JOptionPane.showMessageDialog(
             this, 
-            scrollPane, // Tampilkan JScrollPane
+            scrollPane, 
             "Struk Pembayaran", 
             JOptionPane.INFORMATION_MESSAGE
         );
     }
 
 
-    /**
-     * Method untuk proses database (Pengurangan Stok & Pencatatan Pesanan)
-     */
+
     private boolean lakukanPenguranganStok() {
         if (pesanan.isEmpty()) {
             return true;
@@ -322,11 +293,8 @@ public class payPage extends JFrame {
                     }
                     
                     if (!stokCukup) break; 
-
-                    // --- PERUBAHAN DI SINI ---
-                    // Hitung subtotal DAN SIMPAN untuk struk
                     int subtotal = hargaSatuan * jumlahDipesan;
-                    this.subtotalPerItem.put(namaMenu, subtotal); // <-- SIMPAN SUBTOTAL
+                    this.subtotalPerItem.put(namaMenu, subtotal); 
                     
                     String sqlInsertPesanan = "INSERT INTO pesanan (id_menu, jumlah, total_harga) VALUES (?, ?, ?)";
                     try (PreparedStatement psInsert = conn.prepareStatement(sqlInsertPesanan)) {
@@ -335,8 +303,7 @@ public class payPage extends JFrame {
                         psInsert.setInt(3, subtotal);
                         psInsert.executeUpdate();
                     }
-                    // --- AKHIR PERUBAHAN ---
-                    
+
                 } catch (SQLException e) {
                     stokCukup = false;
                     JOptionPane.showMessageDialog(this, "Error saat memproses resep: " + e.getMessage());
